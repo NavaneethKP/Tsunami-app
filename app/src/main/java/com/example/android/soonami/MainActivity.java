@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     /** URL to query the USGS dataset for earthquake information */
     private static final String USGS_REQUEST_URL =
-            "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2014-01-01&endtime=2014-12-01&minmagnitude=7";
+            "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2014-01-01&endtime=2014-12-01&minmagnitude=7as";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 jsonResponse = makeHttpRequest(url);
             } catch (IOException e) {
+                Log.e(LOG_TAG,"Worst Response",e);
                 // TODO Handle the IOException
             }
 
@@ -138,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * Returns new URL object from the given string URL.
          */
-        private URL createUrl(String stringUrl) {
+        private URL createUrl(String stringUrl){
             URL url = null;
             try {
                 url = new URL(stringUrl);
@@ -164,16 +165,18 @@ public class MainActivity extends AppCompatActivity {
                     urlConnection.setReadTimeout(10000 /* milliseconds */);
                     urlConnection.setConnectTimeout(15000 /* milliseconds */);
                     urlConnection.connect();
-                    inputStream = urlConnection.getInputStream();
 
                     //Checking for the successful response code 200
                     if(urlConnection.getResponseCode()==200) {
+                        inputStream = urlConnection.getInputStream();
                         jsonResponse = readFromStream(inputStream);
                         return jsonResponse;
                     }
+                    else Log.e(LOG_TAG,"Error:"+urlConnection.getResponseCode());
 
                 }
             } catch (IOException e) {
+                    Log.e(LOG_TAG,"This is not successful response",e);
                 // TODO: Handle the exception
             } finally {
                 if (urlConnection != null) {
